@@ -1,0 +1,65 @@
+{
+ "P1": {
+  "score": 7.6,
+  "sub": [
+   7.4,
+   8.3,
+   6.5,
+   6.9,
+   8.9
+  ],
+  "minutes": 20.7,
+  "turns": 29,
+  "out_tokens": 80230,
+  "tools": 32,
+  "renders": 7,
+  "reviews": 11,
+  "cuts": 4,
+  "motion": 5.89,
+  "still_pct": 0.0,
+  "colorful": 68.5,
+  "hue_bins": 7
+ },
+ "P2": {
+  "score": 8.9,
+  "sub": [
+   8.9,
+   8.8,
+   9.8,
+   8.7,
+   8.3
+  ],
+  "minutes": 51.5,
+  "turns": 53,
+  "out_tokens": 153739,
+  "tools": 52,
+  "renders": 8,
+  "reviews": 12,
+  "cuts": 44,
+  "motion": 12.49,
+  "still_pct": 12.2,
+  "colorful": 58.4,
+  "hue_bins": 10
+ },
+ "P3": {
+  "score": 9.3,
+  "sub": [
+   9.6,
+   9.5,
+   8.4,
+   9.7,
+   9.3
+  ],
+  "minutes": 51.1,
+  "turns": 81,
+  "out_tokens": 163239,
+  "tools": 71,
+  "renders": 13,
+  "reviews": 11,
+  "cuts": 47,
+  "motion": 10.1,
+  "still_pct": 25.0,
+  "colorful": 20.8,
+  "hue_bins": 5
+ }
+}

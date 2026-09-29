@@ -1,0 +1,28 @@
+# Media: too large for git (0.4–2.1 GB per video). See "Watch the outputs" in README.md; the videos are attached to the GitHub release.
+*.mp4
+*.mov
+*.wav
+*.mp3
+*.f32
+*.npz
+
+# Render caches, intermediate frames and dependencies
+node_modules/
+build/seg/
+p1-simple/venv/
+p1-simple/segs_v2/
+frames/*.png
+research/.render.html
+
+# Local tooling
+.claude/
+.DS_Store
+
+# The 30 s promo mix is kept out of this research repo
+promo/
+
+# This repo is research only: the agents' renderer source stays local
+p1-simple/
+mv/
+build/
+frames/

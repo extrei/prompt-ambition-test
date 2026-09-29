@@ -1,0 +1,48 @@
+{
+ "_note": "Coolness scores are one reviewer's judgment (Claude Opus 5.5, in a follow-up review session) from contact sheets of each video sampled every ~3 s. Scale 0-10. Coolness = mean of the five axes.",
+ "axes": [
+  "Craft",
+  "Concept",
+  "Energy",
+  "Type",
+  "Cohesion"
+ ],
+ "runs": {
+  "P1": {
+   "label": "Simple",
+   "file": "motion graphics.mp4",
+   "sub": [
+    7.4,
+    8.3,
+    6.5,
+    6.9,
+    8.9
+   ],
+   "score": 7.6
+  },
+  "P2": {
+   "label": "Ambition",
+   "file": "Music Video.mp4",
+   "sub": [
+    8.9,
+    8.8,
+    9.8,
+    8.7,
+    8.3
+   ],
+   "score": 8.9
+  },
+  "P3": {
+   "label": "Ambition + Persona",
+   "file": "Motion.mp4",
+   "sub": [
+    9.6,
+    9.5,
+    8.4,
+    9.7,
+    9.3
+   ],
+   "score": 9.3
+  }
+ }
+}

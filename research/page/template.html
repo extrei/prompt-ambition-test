@@ -1,0 +1,407 @@
+<title>Prompt Ambition Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; the three prompts open the page, then four evidence sections, then the table. */
+:root {
+  --page: #f6f5f1; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #6f6d68;
+  --grid: #e1e0d9; --axis: #c3c2b7; --ring: rgba(11,11,11,.10);
+  --p1: #2a78d6; --p2: #eb6834; --p3: #1baf7a;
+  --display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --step: clamp(12px, 4vw, 44px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink2: #c3c2b7; --muted: #9a988f;
+    --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,.10);
+    --p1: #3987e5; --p2: #d95926; --p3: #199e70; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink2: #c3c2b7; --muted: #9a988f;
+  --grid: #2c2c2a; --axis: #383835; --ring: rgba(255,255,255,.10);
+  --p1: #3987e5; --p2: #d95926; --p3: #199e70; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--page); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 64px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(44px, 9vw, 104px); font-weight: 850; font-stretch: 125%; line-height: .92; letter-spacing: -.02em; }
+h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 750; font-stretch: 112%; line-height: 1.1; }
+h3 { font-size: 15px; font-weight: 650; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink2); }
+.dek { font-size: clamp(17px, 2vw, 20px); color: var(--ink2); max-width: 60ch; }
+header { display: grid; gap: 18px; }
+section { display: grid; gap: 22px; }
+.sec-head { display: grid; gap: 8px; }
+.sec-head p { color: var(--ink2); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* prompts */
+.prompts { display: grid; gap: 10px; }
+.rung { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px 24px; align-items: center; background: var(--surface);
+  border: 1px solid var(--ring); border-radius: 6px; padding: 18px 20px; position: relative; }
+.rung::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 0 4px 4px 0; background: var(--c); }
+.rung .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.tag { font-family: var(--mono); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.tag i { font-style: normal; display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--c); margin-right: 8px; vertical-align: -1px; }
+.prompt { font-family: var(--mono); font-size: 14px; line-height: 1.6; color: var(--ink); margin-top: 8px; overflow-wrap: anywhere; }
+.prompt .old { color: var(--muted); }
+.prompt mark { background: color-mix(in oklab, var(--c) 20%, transparent); color: var(--ink); padding: 1px 3px; border-radius: 3px; box-shadow: inset 0 -2px 0 var(--c); }
+.out { display: flex; gap: 16px; align-items: center; }
+.out img { width: 176px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; display: block; border: 1px solid var(--ring); }
+.score { display: grid; justify-items: end; gap: 0; min-width: 84px; }
+.score b { font-family: var(--display); font-size: 48px; font-weight: 850; font-stretch: 112%; line-height: 1; }
+.score span { font-family: var(--mono); font-size: 11px; color: var(--ink2); letter-spacing: .06em; text-transform: uppercase; text-align: right; }
+.score .d { color: var(--ink2); font-size: 12px; }
+.src { font-family: var(--mono); font-size: 12px; color: var(--ink2); }
+
+/* findings strip */
+.findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.finding { border-top: 2px solid var(--c); padding-top: 12px; display: grid; gap: 6px; align-content: start; }
+.finding .big { font-family: var(--display); font-weight: 800; font-stretch: 112%; font-size: 26px; line-height: 1.1; }
+.finding p { color: var(--ink2); font-size: 15px; }
+
+/* charts */
+.panel { background: var(--surface); border: 1px solid var(--ring); border-radius: 6px; padding: 18px 18px 12px; min-width: 0; position: relative; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); display: inline-block; }
+svg { display: block; width: 100%; height: auto; overflow: visible; }
+svg text { font-family: var(--body); fill: var(--ink2); font-size: 12px; }
+svg .lbl { fill: var(--ink); font-weight: 600; }
+svg .mono { font-family: var(--mono); font-size: 11px; }
+.grid-line { stroke: var(--grid); stroke-width: 1; }
+.axis-line { stroke: var(--axis); stroke-width: 1; }
+.multiples { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.multiples .panel { padding: 14px 14px 10px; display: grid; gap: 4px; }
+.multiples h3 { font-size: 14px; }
+.multiples .note { font-size: 12px; color: var(--muted); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--page); font-size: 12.5px; line-height: 1.45; padding: 7px 10px;
+  border-radius: 5px; white-space: nowrap; z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,.18); font-variant-numeric: tabular-nums; }
+.tip b { font-weight: 650; }
+.tip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.hit { fill: transparent; cursor: default; }
+.cap { font-size: 13px; color: var(--muted); max-width: 70ch; }
+
+/* table */
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--ring); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 620px; }
+th, td { padding: 9px 14px; text-align: right; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink2); font-weight: 600; }
+tbody th { font-weight: 500; color: var(--ink2); }
+tr.grp td, tr.grp th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--page); }
+.chip { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: var(--c); margin-right: 7px; }
+
+.caveats { display: grid; gap: 8px; color: var(--ink2); font-size: 15px; }
+.caveats h2 { color: var(--ink); }
+.caveats ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; max-width: 72ch; }
+footer { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .rung { grid-template-columns: minmax(0, 1fr); }
+  .out img { width: 128px; }
+  .score b { font-size: 40px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rung { animation: rise .6s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 90ms); }
+  @keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Prompt experiment · claude-opus-5-5 · 29 Sep 2026 · 3 parallel sessions</div>
+    <h1>Prompt<br>Ambition<br>Test</h1>
+    <p class="dek">Three Claude Code sessions got the same job: make a motion-graphics video for “I’m Upping My P(Doom)”. P2 adds a request for ambition to P1, and P3 adds a designer persona to P2. Here is what each layer changed in the work and in the result.</p>
+  </header>
+
+  <section aria-labelledby="prompts-h">
+    <div class="sec-head">
+      <div class="eyebrow">The three prompts</div>
+      <h2 id="prompts-h">P1 Simple, P2 Ambition, P3 Ambition + Persona</h2>
+    </div>
+    <div class="prompts" id="prompts"></div>
+  </section>
+
+  <section aria-labelledby="find-h">
+    <div class="sec-head">
+      <div class="eyebrow">Summary</div>
+      <h2 id="find-h">What each layer bought</h2>
+    </div>
+    <div class="findings" id="findings"></div>
+  </section>
+
+  <section aria-labelledby="q-h">
+    <div class="sec-head">
+      <div class="eyebrow">1 · Quality</div>
+      <h2 id="q-h">Coolness score by axis</h2>
+      <p>Each output scored 0–10 on five axes. Ambition lifted energy most. The persona lifted craft, type and cohesion, and gave up some energy.</p>
+    </div>
+    <div class="panel">
+      <div class="legend" id="lg-q"></div>
+      <div id="dots"></div>
+    </div>
+    <p class="cap">Scores are one reviewer’s judgment (Claude Opus 5.5, in a follow-up review session) from sampled frames. The axis starts at 6 because every score sits above it; dots show position, not length.</p>
+  </section>
+
+  <section aria-labelledby="c-h">
+    <div class="sec-head">
+      <div class="eyebrow">2 · Effort</div>
+      <h2 id="c-h">What each session spent</h2>
+      <p>Ambition roughly doubled the budget. The persona used about the same time and tokens as ambition, but spent them differently: more turns, more renders, less code per turn.</p>
+    </div>
+    <div class="multiples" id="cost"></div>
+  </section>
+
+  <section aria-labelledby="v-h">
+    <div class="sec-head">
+      <div class="eyebrow">3 · On screen</div>
+      <h2 id="v-h">What the videos actually do</h2>
+      <p>Measured from the rendered files at 10 frames per second. These numbers describe style, so higher is not always better.</p>
+    </div>
+    <div class="multiples" id="look"></div>
+    <div class="panel">
+      <h3 style="margin-bottom:6px">Motion across the song</h3>
+      <div class="legend" id="lg-m"></div>
+      <div id="motion"></div>
+    </div>
+    <p class="cap">Motion is the mean pixel change between frames (0–255 scale), averaged over a 5-second window. Shaded bands are the choruses. The simple prompt stays on one moving stage the whole time; the other two cut on nearly every lyric line.</p>
+  </section>
+
+  <section aria-labelledby="t-h">
+    <div class="sec-head">
+      <div class="eyebrow">4 · Process</div>
+      <h2 id="t-h">How each session worked</h2>
+      <p>Every tool call on a shared clock, from the moment the prompt arrived. Tall ticks are renders, mid ticks are the agent looking at its own frames, short ticks are everything else.</p>
+    </div>
+    <div class="panel">
+      <div class="legend" id="lg-t"></div>
+      <div id="timeline"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="tb-h">
+    <div class="sec-head">
+      <div class="eyebrow">All numbers</div>
+      <h2 id="tb-h">Data table</h2>
+    </div>
+    <div class="tablewrap"><table id="table"></table></div>
+  </section>
+
+  <section class="caveats" aria-labelledby="cv-h">
+    <h2 id="cv-h">Read with care</h2>
+    <ul>
+      <li>One run per prompt. A second run of the same prompt could land somewhere else, so treat the gaps as a signal, not a law.</li>
+      <li>The coolness scores are subjective and came from the same model family that made the videos.</li>
+      <li>The simple-prompt session was interrupted once by the user (“create a new test directory while there is another agent working”), which cost it a few minutes.</li>
+      <li>All three sessions ran at the same time on one machine and shared the CPU and GPU, so wall-clock time is noisy.</li>
+      <li>Session time runs from the prompt to the last logged event. The persona session’s last message was a self-scheduled check-in, not a user message.</li>
+    </ul>
+  </section>
+
+  <footer>Sources: Claude Code session logs 5d0644c7 (P1), dfa9dbd8 (P2), e5c3ebb5 (P3); rendered files in pdoom/.</footer>
+</div>
+
+<script>
+const D = /*DATA*/null;
+const P = ['p1', 'p2', 'p3'];
+const FMT = { int: (v) => fmt(v), d1: (v) => fmt(v, 1), min: (v) => fmt(v, 1) + ' min', k: (v) => fmt(v / 1000, 0) + 'k', pct: (v) => fmt(v, 1) + '%', fps: (v) => v + ' fps' };
+const col = (i) => `var(--${P[i]})`;
+const NS = 'http://www.w3.org/2000/svg';
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function txt(parent, x, y, s, attrs = {}) { const t = el('text', { x, y, ...attrs }, parent); t.textContent = s; return t; }
+const fmt = (v, d = 0) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+
+// tooltip shared by all charts
+function tipFor(panel) {
+  let tip = panel.querySelector('.tip');
+  if (!tip) { tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; panel.appendChild(tip); }
+  return {
+    show(html, ev) {
+      tip.innerHTML = html; tip.hidden = false;
+      const r = panel.getBoundingClientRect();
+      let x = ev.clientX - r.left + 14, y = ev.clientY - r.top + 14;
+      const w = tip.offsetWidth;
+      if (x + w > r.width - 6) x = ev.clientX - r.left - w - 14;
+      tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    },
+    hide() { tip.hidden = true; },
+  };
+}
+const sw = (i) => `<i style="background:${col(i)}"></i>`;
+function legend(id) { $(id).innerHTML = D.runs.map((r, i) => `<span style="--c:${col(i)}"><i></i>${r.id} · ${r.label}</span>`).join(''); }
+
+// ── prompts ──
+$('prompts').innerHTML = D.runs.map((r, i) => {
+  const d = i ? `<span class="d">+${(r.score - D.runs[i - 1].score).toFixed(1)} vs ${D.runs[i - 1].id}</span>` : '<span class="d">baseline</span>';
+  return `<article class="rung" style="--i:${i};--c:${col(i)}">
+    <div style="min-width:0">
+      <div class="meta"><span class="tag"><i></i>${r.id} · ${r.label}</span><span class="src">${r.file}</span></div>
+      <div class="prompt">${r.promptHtml}</div>
+    </div>
+    <div class="out">
+      <img src="${r.thumb}" alt="Frame from the ${r.id} video" loading="lazy">
+      <div class="score"><span>Coolness</span><b class="num">${r.score.toFixed(1)}</b>${d}</div>
+    </div>
+  </article>`;
+}).join('');
+
+// ── findings ──
+$('findings').innerHTML = D.findings.map((f) => `<div class="finding" style="--c:${f.c}"><div class="eyebrow">${f.k}</div><div class="big">${f.big}</div><p>${f.p}</p></div>`).join('');
+
+// ── dot plot ──
+(function () {
+  legend('lg-q');
+  const rows = [...D.axes, 'Coolness'];
+  const W = 760, rowH = 40, L = 110, R = 30, T = 30, H = T + rows.length * rowH + 10;
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Dot plot of coolness sub-scores for each prompt' }, $('dots'));
+  const x = (v) => L + (v - 6) / 4 * (W - L - R);
+  for (let v = 6; v <= 10; v += 0.5) {
+    el('line', { x1: x(v), x2: x(v), y1: T - 8, y2: H - 10, class: v % 1 ? 'grid-line' : 'axis-line', 'stroke-opacity': v % 1 ? .6 : 1 }, svg);
+    if (v % 1 === 0) txt(svg, x(v), T - 14, v.toFixed(0), { 'text-anchor': 'middle', class: 'mono' });
+  }
+  const panel = $('dots').closest('.panel'), tip = tipFor(panel);
+  rows.forEach((name, ri) => {
+    const y = T + ri * rowH + rowH / 2, total = ri === rows.length - 1;
+    if (total) el('line', { x1: 0, x2: W, y1: y - rowH / 2, y2: y - rowH / 2, class: 'axis-line' }, svg);
+    txt(svg, 0, y + 4, name, { class: total ? 'lbl' : '' });
+    const vals = D.runs.map((r) => (total ? r.score : r.sub[ri]));
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    el('line', { x1: x(lo), x2: x(hi), y1: y, y2: y, stroke: 'var(--axis)', 'stroke-width': 2 }, svg);
+    vals.forEach((v, i) => {
+      el('circle', { cx: x(v), cy: y, r: total ? 8 : 6.5, fill: col(i), stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+    });
+    // direct label the leader only
+    const best = vals.indexOf(hi);
+    txt(svg, x(hi) + 14, y + 4, hi.toFixed(1), { class: 'lbl mono' });
+    const hit = el('rect', { x: 0, y: y - rowH / 2, width: W, height: rowH, class: 'hit' }, svg);
+    hit.addEventListener('mousemove', (ev) => tip.show(`<b>${name}</b><br>` + D.runs.map((r, i) => `${sw(i)}${r.id} ${r.label}: <b>${vals[i].toFixed(1)}</b>`).join('<br>'), ev));
+    hit.addEventListener('mouseleave', tip.hide);
+  });
+})();
+
+// ── small multiples (horizontal bars from zero) ──
+function multiples(targetId, items) {
+  const host = $(targetId);
+  items.forEach((m) => {
+    const panel = document.createElement('div'); panel.className = 'panel';
+    panel.innerHTML = `<h3>${m.t}</h3>${m.n ? `<div class="note">${m.n}</div>` : ''}`;
+    host.appendChild(panel);
+    const W = 300, bh = 16, gap = 10, T = 8, L = 28, R = 70, H = T + 3 * (bh + gap);
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': m.t }, panel);
+    const max = m.max ?? (Math.max(...m.v) || 1);
+    const x = (v) => (W - L - R) * v / max;
+    el('line', { x1: L, x2: L, y1: T - 4, y2: H - gap + 4, class: 'axis-line' }, svg);
+    const tip = tipFor(panel);
+    m.v.forEach((v, i) => {
+      const y = T + i * (bh + gap), w = Math.max(x(v), 2);
+      txt(svg, 0, y + bh - 3, D.runs[i].id, { class: 'mono' });
+      el('path', { d: `M${L},${y} h${w - 4} a4,4 0 0 1 4,4 v${bh - 8} a4,4 0 0 1 -4,4 h${-(w - 4)} z`, fill: col(i) }, svg);
+      txt(svg, L + w + 8, y + bh - 3, FMT[m.f](v), { class: 'lbl mono' });
+      const hit = el('rect', { x: 0, y: y - gap / 2, width: W, height: bh + gap, class: 'hit' }, svg);
+      hit.addEventListener('mousemove', (ev) => tip.show(`${sw(i)}<b>${D.runs[i].id} ${D.runs[i].label}</b><br>${m.t}: ${FMT[m.f](v)}${i ? `<br>vs ${D.runs[i - 1].id}: ${ratio(v, m.v[i - 1])}` : ''}`, ev));
+      hit.addEventListener('mouseleave', tip.hide);
+    });
+  });
+}
+function ratio(a, b) { if (!b) return a ? 'new' : 'same'; const r = a / b; return r >= 1 ? `×${r.toFixed(2)}` : `${Math.round((1 - r) * 100)}% less`; }
+multiples('cost', D.cost);
+multiples('look', D.look);
+
+// ── motion line chart ──
+(function () {
+  legend('lg-m');
+  const W = 900, H = 280, L = 40, R = 16, T = 16, B = 30;
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Motion per second across the song for each prompt' }, $('motion'));
+  const n = D.motion[0].length, maxY = 40;
+  const x = (s) => L + s / (n - 1) * (W - L - R), y = (v) => T + (1 - v / maxY) * (H - T - B);
+  D.chorus.forEach(([a, b]) => el('rect', { x: x(a), y: T, width: x(b) - x(a), height: H - T - B, fill: 'var(--grid)', opacity: .55 }, svg));
+  txt(svg, x(D.chorus[0][0]) + 4, T + 12, 'Chorus', { class: 'mono' });
+  for (let v = 0; v <= maxY; v += 10) {
+    el('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), class: v ? 'grid-line' : 'axis-line' }, svg);
+    txt(svg, L - 8, y(v) + 4, v, { 'text-anchor': 'end', class: 'mono' });
+  }
+  for (let s = 0; s <= 150; s += 30) txt(svg, x(s), H - 8, `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, { 'text-anchor': 'middle', class: 'mono' });
+  const sm = D.motion.map((a) => a.map((_, i) => { let s = 0, c = 0; for (let k = i - 2; k <= i + 2; k++) if (a[k] !== undefined) { s += a[k]; c++; } return s / c; }));
+  sm.forEach((a, i) => {
+    el('path', { d: a.map((v, s) => `${s ? 'L' : 'M'}${x(s).toFixed(1)},${y(Math.min(v, maxY)).toFixed(1)}`).join(''), fill: 'none', stroke: col(i), 'stroke-width': 2, 'stroke-linejoin': 'round' }, svg);
+    const last = a[a.length - 1];
+  });
+  // direct labels at the right edge, nudged apart
+  const ends = sm.map((a, i) => ({ i, y: y(Math.min(a[a.length - 1], maxY)) })).sort((a, b) => a.y - b.y);
+  for (let k = 1; k < ends.length; k++) if (ends[k].y - ends[k - 1].y < 14) ends[k].y = ends[k - 1].y + 14;
+  const cross = el('line', { y1: T, y2: H - B, stroke: 'var(--ink2)', 'stroke-width': 1, opacity: 0 }, svg);
+  const dots = sm.map((_, i) => el('circle', { r: 4.5, fill: col(i), stroke: 'var(--surface)', 'stroke-width': 2, opacity: 0 }, svg));
+  const panel = $('motion').closest('.panel'), tip = tipFor(panel);
+  const hit = el('rect', { x: L, y: T, width: W - L - R, height: H - T - B, class: 'hit' }, svg);
+  hit.addEventListener('mousemove', (ev) => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * W;
+    const s = Math.round(Math.max(0, Math.min(n - 1, (sx - L) / (W - L - R) * (n - 1))));
+    cross.setAttribute('x1', x(s)); cross.setAttribute('x2', x(s)); cross.setAttribute('opacity', .5);
+    dots.forEach((d, i) => { d.setAttribute('cx', x(s)); d.setAttribute('cy', y(Math.min(sm[i][s], maxY))); d.setAttribute('opacity', 1); });
+    const lyr = D.lyrics.filter((l) => l[0] <= s + .5).pop();
+    tip.show(`<b>${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}</b>${lyr && s < lyr[1] + 2 ? ` · “${lyr[2]}”` : ''}<br>` + D.runs.map((rr, i) => `${sw(i)}${rr.id}: <b>${sm[i][s].toFixed(1)}</b>`).join('<br>'), ev);
+  });
+  hit.addEventListener('mouseleave', () => { tip.hide(); cross.setAttribute('opacity', 0); dots.forEach((d) => d.setAttribute('opacity', 0)); });
+})();
+
+// ── process timeline ──
+(function () {
+  const kinds = [['render', 'Render', 1], ['review', 'Looked at its frames', .66], ['write', 'Wrote a code file', .66], ['other', 'Other tool call', .32]];
+  $('lg-t').innerHTML = D.runs.map((r, i) => `<span style="--c:${col(i)}"><i></i>${r.id} · ${r.label}</span>`).join('') +
+    `<span>Tall tick: render · medium: frame review or file write · short: other tool call</span>`;
+  const W = 900, laneH = 62, L = 50, R = 80, T = 30, B = 30, H = T + 3 * laneH + B;
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Timeline of tool calls for each session' }, $('timeline'));
+  const maxM = 54, x = (m) => L + m / maxM * (W - L - R);
+  for (let m = 0; m <= 50; m += 10) {
+    el('line', { x1: x(m), x2: x(m), y1: T, y2: H - B, class: 'grid-line' }, svg);
+    txt(svg, x(m), H - 8, `${m} min`, { 'text-anchor': 'middle', class: 'mono' });
+  }
+  const panel = $('timeline').closest('.panel'), tip = tipFor(panel);
+  D.runs.forEach((r, li) => {
+    const base = T + (li + 1) * laneH - 12;
+    el('line', { x1: L, x2: x(r.minutes), y1: base, y2: base, class: 'axis-line' }, svg);
+    txt(svg, 0, base, r.id, { class: 'lbl mono' });
+    r.events.forEach(([m, k]) => {
+      const h = (laneH - 20) * kinds.find((q) => q[0] === k)[2];
+      el('line', { x1: x(m), x2: x(m), y1: base, y2: base - h, stroke: col(li), 'stroke-width': k === 'render' ? 2.5 : 1.6, opacity: k === 'other' ? .55 : 1, 'stroke-linecap': 'round' }, svg);
+    });
+    el('circle', { cx: x(r.minutes), cy: base, r: 4, fill: col(li), stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+    txt(svg, x(r.minutes) + 9, base + 4, `${r.minutes.toFixed(1)} min`, { class: 'mono' });
+    (r.marks || []).forEach(([m, s]) => {
+      el('path', { d: `M${x(m)},${base - laneH + 18} l-5,-8 h10 z`, fill: 'var(--ink)' }, svg);
+      txt(svg, x(m) + 8, base - laneH + 14, s, { class: 'mono', fill: 'var(--ink)' });
+    });
+    const hit = el('rect', { x: L, y: base - laneH + 12, width: W - L - R, height: laneH, class: 'hit' }, svg);
+    hit.addEventListener('mousemove', (ev) => {
+      const b = svg.getBoundingClientRect(), mm = ((ev.clientX - b.left) / b.width * W - L) / (W - L - R) * maxM;
+      const c = { render: 0, review: 0, write: 0, other: 0 };
+      r.events.filter(([m]) => m <= mm).forEach(([, k]) => c[k]++);
+      tip.show(`${sw(li)}<b>${r.id} · ${r.label}</b> at ${Math.max(0, mm).toFixed(1)} min<br>renders ${c.render} · reviews ${c.review} · files written ${c.write} · other ${c.other}`, ev);
+    });
+    hit.addEventListener('mouseleave', tip.hide);
+  });
+})();
+
+// ── table ──
+(function () {
+  let h = `<thead><tr><th>Metric</th>${D.runs.map((r, i) => `<th><span class="chip" style="--c:${col(i)}"></span>${r.id} · ${r.label}</th>`).join('')}</tr></thead><tbody>`;
+  D.table.forEach((g) => {
+    h += `<tr class="grp"><th colspan="4">${g.g}</th></tr>`;
+    g.rows.forEach(([name, ...vals]) => { h += `<tr><th>${name}</th>${vals.map((v) => `<td>${v}</td>`).join('')}</tr>`; });
+  });
+  $('table').innerHTML = h + '</tbody>';
+})();
+</script>
